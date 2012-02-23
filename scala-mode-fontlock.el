@@ -49,6 +49,7 @@
 
 (require 'cl)
 (require 'font-lock)
+(require 'cc-mode)
 (require 'scala-mode-constants)
 (require 'scala-mode-lib)
 (require 'scala-mode-navigation)
@@ -133,7 +134,12 @@
                ((scala-match-and-skip-binding limit) t)))))
 
 (defvar scala-font-lock-keywords
-  `(;; keywords
+  `(;; doc comments
+    (,(lambda (limit)
+        (c-font-lock-doc-comments "/\\*\\*" limit
+          javadoc-font-lock-doc-comments)))
+
+    ;; keywords
     (,scala-keywords-re 0 font-lock-keyword-face nil)
 
     ;; constants
