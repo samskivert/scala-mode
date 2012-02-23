@@ -142,13 +142,14 @@ through `mail-user-agent'."
   "Major mode for editing Scala code.
 \\{scala-mode-map}"
   :group 'scala
-  (set (make-local-variable 'font-lock-defaults)         '(scala-font-lock-keywords
-                                                           nil
-                                                           nil
-                                                           ((?\_ . "w"))
-                                                           nil
-                                                           (font-lock-syntactic-keywords . scala-font-lock-syntactic-keywords)
-                                                           (parse-sexp-lookup-properties . t)))
+  (set (make-local-variable 'font-lock-defaults)
+       '(scala-font-lock-keywords
+         nil
+         nil
+         ((?\_ . "w"))
+         nil
+         (font-lock-syntactic-keywords . scala-font-lock-syntactic-keywords)
+         (parse-sexp-lookup-properties . t)))
 
   (set (make-local-variable 'paragraph-separate)           (concat "^\\s *$\\|" page-delimiter))
   (set (make-local-variable 'paragraph-start)              (concat "^\\s *$\\|" page-delimiter))
