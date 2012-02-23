@@ -130,11 +130,10 @@ through `mail-user-agent'."
     (modify-syntax-entry ?\. "." table)
 
     ;; comments
-    ;; the `n' means that comments can be nested
-    (modify-syntax-entry ?\/  ". 124nb" table)
-    (modify-syntax-entry ?\*  ". 23n"   table)
-    (modify-syntax-entry ?\n  "> bn" table)
-    (modify-syntax-entry ?\r  "> bn" table)
+    (modify-syntax-entry ?\/  ". 124b" table)
+    (modify-syntax-entry ?\*  ". 23"   table)
+    (modify-syntax-entry ?\n  "> b" table)
+    (modify-syntax-entry ?\r  "> b" table)
     table)
   "Syntax table used in `scala-mode' buffers.")
 
