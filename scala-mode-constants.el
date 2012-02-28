@@ -42,7 +42,6 @@
 ;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;; SUCH DAMAGE.
 
-
 ;;; Commentary:
 ;;
 
@@ -54,10 +53,12 @@
 ;; Helper functions
 
 (defun scala-regexp-opt-charset (chars)
-  "Return a regexp to match a character in CHARS.
-
-The basic idea is to find character ranges.  Also we take care in the
-position of character set meta characters in the character set regexp."
+  ;;
+  ;; Return a regexp to match a character in CHARS.
+  ;;
+  ;; The basic idea is to find character ranges.  Also we take care in the
+  ;; position of character set meta characters in the character set regexp.
+  ;;
   (let* ((charmap (make-char-table 'case-table))
      (start -1) (end -2)
      (charset "")
@@ -66,38 +67,38 @@ position of character set meta characters in the character set regexp."
     ;; Make a character map but extract character set meta characters.
     (dolist (char chars)
       (case char
-	(?\]
-	 (setq bracket "]"))
-	(?^
-	 (setq caret "^"))
-	(?-
-	 (setq dash "-"))
-	(otherwise
-	 (aset charmap char t))))
+        (?\]
+         (setq bracket "]"))
+        (?^
+         (setq caret "^"))
+        (?-
+         (setq dash "-"))
+        (otherwise
+         (aset charmap char t))))
     ;;
     ;; Make a character set from the map using ranges where applicable.
     (map-char-table
      (lambda (c v)
        (when v
-	 (if (listp c) (setq start (car c) end (cdr c))
-	   (if (= (1- c) end) (setq end c)
-	     (if (> end (+ start 2))
-		 (setq charset (format "%s%c-%c" charset start end))
+         (if (listp c) (setq start (car c) end (cdr c))
+           (if (= (1- c) end) (setq end c)
+             (if (> end (+ start 2))
+                 (setq charset (format "%s%c-%c" charset start end))
               (while (>= end start)
                 (setq charset (format "%s%c" charset start))
                 (incf start)))
-	     (setq start c end c)))))
+             (setq start c end c)))))
      charmap)
     (when (>= end start)
       (if (> end (+ start 2))
-	  (setq charset (format "%s%c-%c" charset start end))
-	(while (>= end start)
-	  (setq charset (format "%s%c" charset start))
-	  (incf start))))
+          (setq charset (format "%s%c-%c" charset start end))
+        (while (>= end start)
+          (setq charset (format "%s%c" charset start))
+          (incf start))))
     ;;
     ;; Make sure a caret is not first and a dash is first or last.
     (if (and (string-equal charset "") (string-equal bracket ""))
-	(concat "[" dash caret "]")
+        (concat "[" dash caret "]")
       (concat "[" bracket charset caret dash "]"))))
 
 
@@ -138,19 +139,29 @@ reserved keywords when used alone.")
 
 (defconst scala-most-special-char-re
   (scala-regexp-opt-charset scala-most-special-chars)
-  "Regular expression matching a single Scala special character.")
+  "Regular expression matching a single Scala special character")
 
 (defconst scala-all-special-char-re
   (scala-regexp-opt-charset scala-all-special-chars)
-  "Regular expression matching a single Scala special character.")
+  "Regular expression matching a single Scala special character")
+
+(defconst template-dcf-keywords-re
+  (regexp-opt '("trait" "class" "object") 'words))
+
+(defconst template-middle-keywords-re
+  (regexp-opt '("with" "extends") 'words))
+
+(defconst template-keywords-re
+  (concat
+   template-dcf-keywords-re "\\|"  template-middle-keywords-re))
 
 (defconst scala-keywords-re
   (regexp-opt '("abstract" "case" "class" "catch" "def" "do" "else" "extends"
-                "final" "finally" "for" "forSome" "if" "implicit" "import" "lazy"
+                "final" "finally" "for" "forSome" "if" "implicit" "implicitly" "import" "lazy"
                 "new" "match" "mixin" "object" "override" "package" "private"
                 "protected" "requires" "return" "sealed" "super" "this" "throw"
                 "trait" "try" "type" "val" "var" "with" "while" "yield")
-	      'words))
+              'words))
 
 (defconst scala-constants-re
   (regexp-opt '("true" "false" "null") 'words))
@@ -180,7 +191,7 @@ reserved keywords when used alone.")
 (defconst scala-expr-start-re
   (concat
    (regexp-opt '("if" "else" "for" "do" "yield") 'words) "\\|"
-   (regexp-opt '("=" "=>") t)))
+   (regexp-opt '("=>") t)))
 
 (defconst scala-expr-starter
   (mapcar (lambda (pair) (cons (car pair) (concat "\\<" (cdr pair) "\\>")))
